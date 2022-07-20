@@ -1,8 +1,9 @@
 from preprocessing import Preprocessing
 from abc import ABC, abstractmethod
 from typing import Any, Optional
-
+from mytypes import Size
 State = Any
+
 
 class Environment(ABC):
     
@@ -19,11 +20,11 @@ class Environment(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_original_state_size(self) -> tuple[int]:
+    def original_state_size(self) -> Size:
         raise NotImplementedError
 
     def state_size(self) -> tuple[int]:
-        size = self.get_original_state_size()
+        size = self.original_state_size()
         for prep in self.preps:
             size = prep.output_size(size)
         return size
