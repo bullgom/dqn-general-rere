@@ -23,7 +23,7 @@ class Environment(ABC):
     def original_state_size(self) -> Size:
         raise NotImplementedError
 
-    def state_size(self) -> tuple[int]:
+    def state_size(self) -> Size:
         size = self.original_state_size()
         for prep in self.preps:
             size = prep.output_size(size)
