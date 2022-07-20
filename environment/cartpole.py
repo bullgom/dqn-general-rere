@@ -19,7 +19,7 @@ class CartPole(Environment):
     def reset(self) -> None:
         self.env.reset()
         
-    def get_original_state_size(self) -> tuple[int]:
+    def original_state_size(self) -> tuple[int]:
         self.reset()
         x = self.env.render("rgb_array")
         return x.shape
