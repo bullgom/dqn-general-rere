@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mytypes import State, Size, Q
+from mytypes import State, Size, Q, ActionSpace
 from typing import overload
 from abc import ABC, abstractmethod
 
@@ -12,7 +12,7 @@ class Network(torch.nn.Module):
     
 class CartPoleNetwork(Network):
     
-    def __init__(self, size: Size) -> None:
+    def __init__(self, size: Size, action_space: ActionSpace) -> None:
         super().__init__()
         self.size = size
         w, h, c = size["w"], size["h"], size["c"]
@@ -34,7 +34,7 @@ class CartPoleNetwork(Network):
         
         l = 100
         self.fc = nn.Linear(linear_size, l)
-        self.fc2 = nn.Linear(l, size["output"])
+        self.fc2 = nn.Linear(l, action_space["move_direction"])
     
     def calculate_conv_size(self, size: int, kernel_size: int, stride: int) -> int:
         return int((size - kernel_size//2)/stride)
@@ -46,9 +46,10 @@ class CartPoleNetwork(Network):
         x = F.relu(x)
         x = self.conv3(x)
         x = F.relu(x)
+        x = x.view((1, -1))
         x = self.fc(x)
         x = F.relu(x)
         x = self.fc2(x)
         
-        return {"q": x}
+        return {"move_direction": x}
         
