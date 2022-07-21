@@ -10,7 +10,7 @@ class Selection(ABC):
         pass
 
     @abstractmethod
-    def __call__(self, q: dict[str, torch.FloatTensor]) -> Action:
+    def __call__(self, q: Q) -> Action:
         raise NotImplementedError
 
 
