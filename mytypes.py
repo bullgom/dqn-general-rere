@@ -1,6 +1,7 @@
 from typing import Any
 
 Size = dict[str, int]
-Action = int
+
+Action = dict[str, int]
 
 State = Any

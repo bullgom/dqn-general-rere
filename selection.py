@@ -11,7 +11,7 @@ class Selection(ABC):
         pass
 
     @abstractmethod
-    def __call__(self, q: dict[str, torch.FloatTensor]) -> dict[str, Action]:
+    def __call__(self, q: dict[str, torch.FloatTensor]) -> Action:
         raise NotImplementedError
 
 
@@ -48,7 +48,7 @@ class EpsilonGreedySelection(Selection):
         self.e_generator = e_generator
         self.action_space_sizes = action_space_sizes
 
-    def __call__(self, q: dict[str, torch.FloatTensor]) -> dict[str, Action]:
+    def __call__(self, q: dict[str, torch.FloatTensor]) -> Action:
         e = self.e_generator.step()
         samples = np.random.uniform(low=0, high=1, size=(len(q),))
         selected_actions = {}
