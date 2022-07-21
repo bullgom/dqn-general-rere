@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 import torch
-from mytypes import Action, Q
+from mytypes import Action, Q, ActionSpace
 
 
 class Selection(ABC):
@@ -44,11 +44,11 @@ class EpsilonGreedySelection(Selection):
     def __init__(
         self,
         e_generator: EpsilonGenerator,
-        action_space_sizes: dict[str, int]
+        action_space: ActionSpace
     ):
         super().__init__()
         self.e_generator = e_generator
-        self.action_space_sizes = action_space_sizes
+        self.action_space_sizes = action_space
 
     def __call__(self, q: Q) -> Action:
         e = self.e_generator.step()
