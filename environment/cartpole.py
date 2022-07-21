@@ -1,6 +1,6 @@
-from environment.environment import Environment, State
+from environment.environment import Environment
 import gym
-from mytypes import Size
+from mytypes import Size, State
 
 
 class CartPole(Environment):

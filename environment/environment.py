@@ -1,10 +1,7 @@
 from preprocessing import Preprocessing
 from abc import ABC, abstractmethod
 from typing import Any, Optional
-from mytypes import Size
-
-State = Any
-
+from mytypes import Size, State
 
 class Environment(ABC):
     
