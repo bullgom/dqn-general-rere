@@ -25,6 +25,9 @@ class LinearEpsilonGenerator(EpsilonGenerator):
 
     def __init__(self, start: float, end: float, steps: int) -> None:
         super().__init__()
+        if any([start > 1., start < 0, end > 1., end < 0]):
+            raise ValueError(
+                f"start and end must be in [0, 1] got {start}, {end}")
         self.start = start
         self.end = end
         self.steps = steps
