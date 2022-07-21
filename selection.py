@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Generator
 import numpy as np
 import torch
-from mytypes import Action
+from mytypes import Action, Q
 
 
 class Selection(ABC):
@@ -48,7 +47,7 @@ class EpsilonGreedySelection(Selection):
         self.e_generator = e_generator
         self.action_space_sizes = action_space_sizes
 
-    def __call__(self, q: dict[str, torch.FloatTensor]) -> Action:
+    def __call__(self, q: Q) -> Action:
         e = self.e_generator.step()
         samples = np.random.uniform(low=0, high=1, size=(len(q),))
         selected_actions = {}
