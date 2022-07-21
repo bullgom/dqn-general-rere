@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import mytypes
 
-class Network(torch.Module):
+class Network(torch.nn.Module):
     
     def __init__(self, size: mytypes.Size) -> None:
         super().__init__()
@@ -29,7 +29,7 @@ class Network(torch.Module):
         self.fc = nn.Linear(linear_size, l)
         self.fc2 = nn.Linear(l, size["output"])
     
-    def calculate_conv_size(size: int, kernel_size: int, stride: int) -> int:
+    def calculate_conv_size(self, size: int, kernel_size: int, stride: int) -> int:
         return int((size - kernel_size//2)/stride)
 
     def __call__(self, x: torch.FloatTensor) -> torch.FloatTensor:
