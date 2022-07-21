@@ -1,11 +1,18 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import mytypes
+from mytypes import State, Size, Q
+from typing import overload
+from abc import ABC, abstractmethod
 
 class Network(torch.nn.Module):
+    @overload
+    def __call__(self, x: State) -> Q:
+        pass
     
-    def __init__(self, size: mytypes.Size) -> None:
+class CartPoleNetwork(Network):
+    
+    def __init__(self, size: Size) -> None:
         super().__init__()
         self.size = size
         w, h, c = size["w"], size["h"], size["c"]
@@ -32,7 +39,7 @@ class Network(torch.nn.Module):
     def calculate_conv_size(self, size: int, kernel_size: int, stride: int) -> int:
         return int((size - kernel_size//2)/stride)
 
-    def __call__(self, x: torch.FloatTensor) -> torch.FloatTensor:
+    def __call__(self, x: State) -> Q:
         x = self.conv1(x)
         x = F.relu(x)
         x = self.conv2(x)
@@ -43,5 +50,5 @@ class Network(torch.nn.Module):
         x = F.relu(x)
         x = self.fc2(x)
         
-        return x
+        return {"q": x}
         
