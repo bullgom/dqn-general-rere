@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from mytypes import SARS, TupleListSARS
+from mytypes import SARS, ConcatSARS
 import numpy as np
 import random
+import torch
 
 class ReplayBuffer(ABC):
     
@@ -15,12 +16,14 @@ class ReplayBuffer(ABC):
             self.buffer.pop(0)
         self.buffer.append(sars)
     
-    def sample(self, batch_size: int) -> TupleListSARS:
+    def sample(self, batch_size: int) -> ConcatSARS:
         if batch_size > self.capacity:
             raise ValueError(f"You can't request more than we have sir")
         samples = random.choices(self.buffer, k=batch_size)
-        tl_sars = tuple(zip(*samples))
-        return tl_sars        
+        s, a, r, sn, d = tuple(zip(*samples))
+        s, r, sn, d = tuple(map(torch.tensor, (s, r, sn, d)))
+                
+        return s, a, r, sn, d
         
     def full(self) -> bool:
         return len(self.buffer) == self.capacity
