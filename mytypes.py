@@ -10,14 +10,9 @@ Reward = float
 Done = bool
 
 SARS = tuple[State, Action, Reward, State, Done]
-TupleListSARS = tuple[list[State],
-                      list[Action],
-                      list[Reward],
-                      list[State],
-                      list[Done]]
+ConcatSARS = tuple[torch.Tensor,
+                   list[Action],
+                   torch.Tensor,
+                   torch.Tensor,
+                   torch.Tensor]
 
-TensorSARS = tuple[torch.Tensor[State],
-                   torch.Tensor[Action],
-                   torch.Tensor[Reward],
-                   torch.Tensor[State],
-                   torch.Tensor[Done]]
