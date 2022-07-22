@@ -10,11 +10,18 @@ class Network(torch.nn.Module):
     def __call__(self, x: State) -> Q:
         pass
     
+    @abstractmethod
+    def copy(self) -> "Network":
+        raise NotImplementedError
+
+    
 class CartPoleNetwork(Network):
     
     def __init__(self, size: Size, action_space: ActionSpace) -> None:
         super().__init__()
         self.size = size
+        self.action_space = action_space
+
         w, h, c = size["w"], size["h"], size["c"]
         
         ch1 = 32
@@ -52,4 +59,8 @@ class CartPoleNetwork(Network):
         x = self.fc2(x)
         
         return {"move_direction": x}
-        
+    
+    def copy(self) -> "CartPoleNetwork":
+        net = CartPoleNetwork(self.size, self.action_space)
+        net.load_state_dict(self.state_dict())
+        return net
