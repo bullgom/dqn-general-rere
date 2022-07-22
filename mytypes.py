@@ -15,3 +15,9 @@ TupleListSARS = tuple[list[State],
                       list[Reward],
                       list[State],
                       list[Done]]
+
+TensorSARS = tuple[torch.Tensor[State],
+                   torch.Tensor[Action],
+                   torch.Tensor[Reward],
+                   torch.Tensor[State],
+                   torch.Tensor[Done]]
