@@ -7,9 +7,11 @@ ActionSpace = dict[str, int]
 Q = dict[str, torch.FloatTensor]
 State = Any
 Reward = float
+Done = bool
 
-SARS = tuple[State, Action, Reward, State]
+SARS = tuple[State, Action, Reward, State, Done]
 TupleListSARS = tuple[list[State],
                       list[Action],
                       list[Reward],
-                      list[State]]
+                      list[State],
+                      list[Done]]
