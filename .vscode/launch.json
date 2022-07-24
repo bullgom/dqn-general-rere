@@ -18,6 +18,13 @@
             "request": "launch",
             "console": "integratedTerminal",
             "module": "run"
+        },        
+        {
+            "name": "Buffer",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "module": "replay_buffer"
         }
     ]
 }

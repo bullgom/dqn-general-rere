@@ -3,22 +3,61 @@ from network import CartPoleNetwork
 from selection import EpsilonGreedySelection, LinearEpsilonGenerator
 import preprocessing as prep
 from agent import Agent
+from replay_buffer import ReplayBuffer
+from torch import optim
+from trainer import OffPolicyTrainer
+
+buffer_capacity = 10000
+lr = 0.001
+batch_size = 5
+gamma = 0.999
+state_size = 84
+eps_start = .9
+eps_end = .1
+eps_steps = 10000
+
+max_steps = 10000
+max_steps_per_episode = 300
+steps_per_train = 100
+steps_per_report = 1000
 
 preps = [
     prep.ToTensor(),
-    prep.Resize({"w": 84, "h": 84})
+    prep.AddBatchDim(),
+    prep.Resize({"w": state_size, "h": state_size})
 ]
 
 env = CartPole(preps)
 state_size = env.state_size()
 action_space = env.action_space()
 net = CartPoleNetwork(state_size, action_space)
-egen = LinearEpsilonGenerator(.9, .1, 33)
+egen = LinearEpsilonGenerator(eps_start, eps_end, eps_steps)
 selection = EpsilonGreedySelection(egen, action_space)
 agent = Agent(net, selection)
+optimizer = optim.Adam(net.parameters(), lr=lr)
+buffer = ReplayBuffer(buffer_capacity, action_space)
+trainer = OffPolicyTrainer(net, net.copy(), buffer, batch_size, optimizer, gamma)
 
-state = env.reset()
-action = agent.step(state)
-ns, r, d = env.step(action)
-action = agent.step(ns)
-ns, r, d = env.step(action)
+elapsed_steps = 0
+while (elapsed_steps <= max_steps):
+    s = env.reset()
+    
+    for i in range(max_steps_per_episode):
+        elapsed_steps += 1
+        a = agent.step(s)
+        ns, r, d = env.step(a)
+        buffer.append((s, a, r, ns, d))
+        s = ns
+        
+        if (elapsed_steps % steps_per_train) == (steps_per_train - 1):
+            losses = trainer.train()
+            
+        if (elapsed_steps % steps_per_report) == (steps_per_report - 1):
+            pass
+        
+        if elapsed_steps > max_steps:
+            break
+        
+        if d:
+            break
+

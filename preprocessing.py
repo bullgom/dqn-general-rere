@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Callable, Optional, Any
 from torchvision.transforms import transforms as tf
-from mytypes import Size
+from mytypes import Size, State
+import torch.nn.functional as F
 
+BATCH_DIM = "batch_dim"
 
 class Preprocessing(ABC):
 
@@ -14,6 +16,16 @@ class Preprocessing(ABC):
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         raise NotImplementedError
 
+class AddBatchDim(Preprocessing):
+    
+    def __call__(self, state: State) -> State:
+        state = state.unsqueeze(0)
+        return state
+    
+    def output_size(self, size: Size) -> Size:
+        size[BATCH_DIM] = 1
+        return size
+        
 
 class WrappedPreprocessing(Preprocessing):
     def __init__(self) -> None:

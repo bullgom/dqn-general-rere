@@ -53,7 +53,7 @@ class CartPoleNetwork(Network):
         x = F.relu(x)
         x = self.conv3(x)
         x = F.relu(x)
-        x = x.view((1, -1))
+        x = x.view((x.size(0), -1))
         x = self.fc(x)
         x = F.relu(x)
         x = self.fc2(x)

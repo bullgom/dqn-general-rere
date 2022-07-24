@@ -17,4 +17,3 @@ class Agent(ABC):
         q = self.network(state)
         a = self.selection(q)
         return a
-

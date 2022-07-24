@@ -5,7 +5,7 @@ Size = dict[str, int]
 Action = dict[str, int]
 ActionSpace = dict[str, int]
 Q = dict[str, torch.FloatTensor]
-State = Any
+State = torch.FloatTensor
 Reward = float
 Done = bool
 
