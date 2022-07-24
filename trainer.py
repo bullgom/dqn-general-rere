@@ -59,7 +59,7 @@ class OffPolicyTrainer(Trainer):
         selected_qs = {}
         
         for action_dimension in q.keys():
-            sub_q = q[action_dimension]
+            sub_q = q[action_dimension].detach()
             sub_a = a[action_dimension]
             sub_a = sub_a.view((sub_a.size(0), -1))
             

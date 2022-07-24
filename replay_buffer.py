@@ -16,6 +16,7 @@ class ReplayBuffer(ABC):
     def append(self, sars: SARS):
         if self.full():
             self.buffer.pop(0)
+        sars = self.detach_sars(sars)
         self.buffer.append(sars)
 
     def sample(self, batch_size: int) -> ConcatSARS:
@@ -38,6 +39,13 @@ class ReplayBuffer(ABC):
 
     def ready(self, batch_size: int) -> bool:
         return len(self.buffer) >= batch_size
+    
+    def detach_sars(self, sars: SARS) -> SARS:
+        s, a, r, sn, d = sars
+        s = s.detach()
+        sn = sn.detach()
+        return s, a, r, sn, d
+        
 
 
 if __name__ == "__main__":
