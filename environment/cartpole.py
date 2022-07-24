@@ -22,6 +22,10 @@ class CartPole(Environment):
 
     def reset(self) -> State:
         self.env.reset()
+        
+        for prep in self.preps:
+            prep.reset()
+        
         state = self.state()
         return state
 

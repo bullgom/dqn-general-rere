@@ -15,6 +15,7 @@ state_size = 84
 eps_start = .9
 eps_end = .1
 eps_steps = 10000
+num_frames = 3
 
 max_steps = 10000
 max_steps_per_episode = 300
@@ -24,7 +25,9 @@ steps_per_report = 1000
 preps = [
     prep.ToTensor(),
     prep.AddBatchDim(),
-    prep.Resize({"w": state_size, "h": state_size})
+    prep.Resize({"w": state_size, "h": state_size}),
+    prep.Grayscale(),
+    prep.MultiFrame(num_frames)
 ]
 
 env = CartPole(preps)
