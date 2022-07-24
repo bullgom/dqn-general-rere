@@ -1,0 +1,3 @@
+
+class Recorder(dict):
+    pass

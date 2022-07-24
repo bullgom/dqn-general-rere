@@ -6,6 +6,11 @@ from agent import Agent
 from replay_buffer import ReplayBuffer
 from torch import optim
 from trainer import OffPolicyTrainer
+from plotter import Plotter, Plot
+from collections import defaultdict
+import os
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 buffer_capacity = 10000
 lr = 0.001
@@ -41,6 +46,17 @@ optimizer = optim.Adam(net.parameters(), lr=lr)
 buffer = ReplayBuffer(buffer_capacity, action_space)
 trainer = OffPolicyTrainer(net, net.copy(), buffer, batch_size, optimizer, gamma)
 
+recorder = defaultdict(lambda : list())
+LOSS = "loss"
+
+plots = [
+    Plot("Loss", f"steps ({steps_per_train})", "loss", {
+        LOSS: recorder[LOSS]
+    })
+]
+plotter = Plotter(plots)
+
+
 elapsed_steps = 0
 while (elapsed_steps <= max_steps):
     s = env.reset()
@@ -54,9 +70,11 @@ while (elapsed_steps <= max_steps):
         
         if (elapsed_steps % steps_per_train) == (steps_per_train - 1):
             losses = trainer.train()
+            loss_sum = sum([loss.item() for loss in losses.values()])/len(losses.values())
+            recorder[LOSS].append(loss_sum)
             
         if (elapsed_steps % steps_per_report) == (steps_per_report - 1):
-            pass
+            plotter.plot(plots)
         
         if elapsed_steps > max_steps:
             break
