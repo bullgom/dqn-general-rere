@@ -81,8 +81,8 @@ class OffPolicyTrainer(Trainer):
         not_done = d.logical_not()
         
         for action_dimension in q.keys():
-            sub_q = q[action_dimension]
+            sub_q = q[action_dimension].detach()
             max_q = sub_q.max(dim=1).values
             pred = r + not_done * self.gamma * max_q
-            preds[action_dimension] = pred.unsqueeze(1).detach()
+            preds[action_dimension] = pred.unsqueeze(1)
         return preds

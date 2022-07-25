@@ -20,9 +20,9 @@ gamma = 0.999
 state_size = 84
 eps_start = .9
 eps_end = .1
-eps_steps = 100000
-num_frames = 3
-switch_interval = 15
+eps_steps = 3000
+num_frames = 4
+switch_interval = 30
 
 max_steps = 300000
 max_steps_per_episode = 300
