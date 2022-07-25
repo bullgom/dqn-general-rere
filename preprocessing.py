@@ -48,7 +48,7 @@ class MultiFrame(Preprocessing):
         if len(self.frames) == 0:
             # we don't use Tensor.repeat
             for _ in range(self.num_frames - 1):
-                self.frames.append(state.clone().detach())
+                self.frames.append(state.clone())
 
         if len(self.frames) >= self.num_frames:
             self.frames.pop(0)

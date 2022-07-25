@@ -8,24 +8,29 @@ from torch import optim
 from trainer import OffPolicyTrainer
 from plotter import Plotter, Plot
 from collections import defaultdict
+import torch
 import os
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-buffer_capacity = 10000
+buffer_capacity = 100000
 lr = 0.001
-batch_size = 5
+batch_size = 64
 gamma = 0.999
 state_size = 84
 eps_start = .9
 eps_end = .1
-eps_steps = 10000
+eps_steps = 100000
 num_frames = 3
+switch_interval = 15
 
-max_steps = 10000
+max_steps = 300000
 max_steps_per_episode = 300
-steps_per_train = 100
-steps_per_report = 1000
+steps_per_train = 50
+steps_per_report = 50
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+cpu = torch.device("cpu")
 
 preps = [
     prep.ToTensor(),
@@ -38,20 +43,24 @@ preps = [
 env = CartPole(preps)
 state_size = env.state_size()
 action_space = env.action_space()
-net = CartPoleNetwork(state_size, action_space)
+net = CartPoleNetwork(state_size, action_space).to(device)
 egen = LinearEpsilonGenerator(eps_start, eps_end, eps_steps)
 selection = EpsilonGreedySelection(egen, action_space)
 agent = Agent(net, selection)
 optimizer = optim.Adam(net.parameters(), lr=lr)
-buffer = ReplayBuffer(buffer_capacity, action_space)
-trainer = OffPolicyTrainer(net, net.copy(), buffer, batch_size, optimizer, gamma)
+buffer = ReplayBuffer(buffer_capacity, action_space, cpu, device)
+trainer = OffPolicyTrainer(net, buffer, batch_size, switch_interval, optimizer, gamma)
 
 recorder = defaultdict(lambda : list())
 LOSS = "loss"
+DURATION = "duration"
 
 plots = [
     Plot("Loss", f"steps ({steps_per_train})", "loss", {
         LOSS: recorder[LOSS]
+    }),
+    Plot("Duration", f"steps ({steps_per_train})", "duration", {
+        DURATION: recorder[DURATION]
     })
 ]
 plotter = Plotter(plots)
@@ -63,7 +72,7 @@ while (elapsed_steps <= max_steps):
     
     for i in range(max_steps_per_episode):
         elapsed_steps += 1
-        a = agent.step(s)
+        a = agent.step(s.to(device))
         ns, r, d = env.step(a)
         buffer.append((s, a, r, ns, d))
         s = ns
@@ -71,7 +80,8 @@ while (elapsed_steps <= max_steps):
         if (elapsed_steps % steps_per_train) == (steps_per_train - 1):
             losses = trainer.train()
             loss_sum = sum([loss.item() for loss in losses.values()])/len(losses.values())
-            recorder[LOSS].append(loss_sum)
+            if loss_sum != 0:
+                recorder[LOSS].append(loss_sum)
             
         if (elapsed_steps % steps_per_report) == (steps_per_report - 1):
             plotter.plot(plots)
@@ -81,4 +91,5 @@ while (elapsed_steps <= max_steps):
         
         if d:
             break
-
+    
+    recorder[DURATION].append(i)

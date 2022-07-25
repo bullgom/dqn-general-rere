@@ -16,7 +16,7 @@ class Plotter:
         figure, axes = plt.subplots(len(plots), ncols=1)
         self.figure = figure
         self.axes = axes
-        plt.tight_layout()
+        #plt.tight_layout()
         plt.ion()
     
     def plot(self, plots: list[Plot]) -> None:

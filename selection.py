@@ -31,7 +31,7 @@ class LinearEpsilonGenerator(EpsilonGenerator):
         self.start = start
         self.end = end
         self.steps = steps
-        self.decrease_per_step = (end-start)/steps
+        self.decrease_per_step = abs(end-start)/steps
         self.current = start
 
     def step(self) -> float:
@@ -55,14 +55,13 @@ class EpsilonGreedySelection(Selection):
         samples = np.random.uniform(low=0, high=1, size=(len(q),))
         selected_actions = {}
         for key, prob in zip(q.keys(), samples):
-
+            sub_q = q[key]
             if prob < e:
-                a = np.random.randint(0, len(q[key]))
+                a = np.random.randint(0, sub_q.numel())
             else:
-                a = np.argmax(q)
+                a = sub_q.argmax(1).item()
             selected_actions[key] = a
         return selected_actions
-
 
 if __name__ == "__main__":
 
