@@ -33,7 +33,11 @@ class Plotter:
                 axe.plot(data, label=key, color=color, linewidth = 1)
             axe.grid()                        
             axe.legend()
-                
+    
+    def show(self):
         plt.pause(0.005)
+    
+    def save(self, filename: str) -> None:
+        plt.savefig(filename)
         
         

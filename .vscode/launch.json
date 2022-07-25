@@ -25,6 +25,13 @@
             "request": "launch",
             "console": "integratedTerminal",
             "module": "replay_buffer"
+        },        
+        {
+            "name": "Run ALE",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "module": "run_ale"
         }
     ]
 }
