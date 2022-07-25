@@ -13,10 +13,10 @@ class Plotter:
     colors = ["red", "orange", "yellow", "lime", "green", "cyan", "blue", "purple", "magenta", "grey"]
     
     def __init__(self, plots: list[Plot]) -> None:
-        figure, axes = plt.subplots(len(plots), ncols=1)
+        figure, axes = plt.subplots(len(plots), ncols=1, figsize=(10,9), constrained_layout=True)
         self.figure = figure
         self.axes = axes
-        #plt.tight_layout()
+        
         plt.ion()
     
     def plot(self, plots: list[Plot]) -> None:
@@ -30,7 +30,7 @@ class Plotter:
             axe.set_title(sub_plot.title)
             
             for color, (key, data) in zip(self.colors, sub_plot.data.items()):
-                axe.plot(data, label=key, color=color, linewidth = 2)
+                axe.plot(data, label=key, color=color, linewidth = 1)
             axe.grid()                        
             axe.legend()
                 
