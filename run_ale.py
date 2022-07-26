@@ -20,19 +20,20 @@ def interval(t: int, interval: int) -> bool:
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 buffer_capacity = 100000
-lr = 0.001
+lr = 0.0001
 batch_size = 64
 gamma = 0.999
 state_size = 84
 eps_start = .9
 eps_end = .1
-eps_steps = 3000
+eps_steps = 500000
 num_frames = 4
-switch_interval = 20
+frameskip = 4
+switch_interval = 1000
 
-max_steps = 300000
-max_steps_per_episode = 5000
-steps_per_train = 50
+max_steps = 3000000
+max_steps_per_episode = 10000
+steps_per_train = 10
 steps_per_report = 50
 steps_per_save = 500
 
@@ -51,7 +52,7 @@ preps = [
     prep.MultiFrame(num_frames)
 ]
 
-inner_env = gym.make("ALE/Breakout-v5", frameskip=3)
+inner_env = gym.make("ALE/Breakout-v5", frameskip=frameskip)
 env = ALE(inner_env, preps)
 state_size = env.state_size()
 action_space = env.action_space()
