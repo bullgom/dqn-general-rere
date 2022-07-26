@@ -9,6 +9,8 @@ class ALE(Environment):
     def __init__(self, env: gym.Env, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.env = env
+        self.min_reward = float("inf")
+        self.max_reward = -float("inf")
 
     def state(self) -> State:
         img = self.env.render(mode="rgb_array")
@@ -19,13 +21,8 @@ class ALE(Environment):
     def step(self, action: Action) -> tuple[State, float, bool]:
         _, r, done, _ = self.env.step(action[self.ACTION])
         img = self.state()
-        
-        if r > 1:
-            r = 1
-        elif r < -1:
-            r = -1
-        elif r != 0:
-            r = r
+
+        r = self.clip_reward(r)
         
         return img, r, done
 
@@ -37,6 +34,14 @@ class ALE(Environment):
         
         state = self.state()
         return state
+    
+    def clip_reward(self, r: float) -> float:
+        if r > 1:
+            r = 1
+        elif r < -1:
+            r = -1
+        
+        return r
 
     def original_state_size(self) -> Size:
         self.reset()
