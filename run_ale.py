@@ -29,13 +29,14 @@ eps_end = .1
 eps_steps = 500000
 num_frames = 4
 frameskip = 4
-switch_interval = 1000
+steps_per_switch = 1000
 
 max_steps = 3000000
 max_steps_per_episode = 10000
 steps_per_train = 10
 steps_per_report = 50
 steps_per_save = 500
+switch_interval_train = int(steps_per_switch / steps_per_train)
 
 base_folder = "experiments"
 run_name = datetime.now().strftime('%Y%d-%H%M%S')
@@ -63,7 +64,7 @@ agent = Agent(net, selection)
 optimizer = optim.Adam(net.parameters(), lr=lr)
 buffer = ReplayBuffer(buffer_capacity, action_space, cpu, device)
 trainer = OffPolicyTrainer(net, buffer, batch_size,
-                           switch_interval, optimizer, gamma)
+                           switch_interval_train, optimizer, gamma)
 
 recorder = defaultdict(lambda: list())
 LOSS = "loss"
