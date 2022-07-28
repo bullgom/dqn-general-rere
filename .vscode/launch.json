@@ -32,6 +32,13 @@
             "request": "launch",
             "console": "integratedTerminal",
             "module": "run_ale"
+        },        
+        {
+            "name": "Run Wandb",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "module": "run_wandb"
         }
     ]
 }
