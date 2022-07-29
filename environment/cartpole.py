@@ -10,7 +10,7 @@ class CartPole(Environment):
         self.env = gym.make("CartPole-v1")
 
     def state(self) -> State:
-        img = self.env.render("rgb_array")
+        img = self.env.render(mode="rgb_array")
         for prep in self.preps:
             img = prep(img)
         return img
@@ -31,7 +31,7 @@ class CartPole(Environment):
 
     def original_state_size(self) -> Size:
         self.reset()
-        x = self.env.render("rgb_array")
+        x = self.env.render(mode="rgb_array")
         s = x.shape
         x = {"w": s[1], "h": s[0], "c": s[2]}
         return x
