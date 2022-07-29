@@ -1,0 +1,2 @@
+snakeviz run_wandb.profile
+python -m cProfile -o run_wandb.profile run_wandb.py

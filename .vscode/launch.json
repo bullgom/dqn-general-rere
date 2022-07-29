@@ -39,6 +39,14 @@
             "request": "launch",
             "console": "integratedTerminal",
             "module": "run_wandb"
+        },        
+        {
+            "name": "Profile run_wandb",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "module": "cProfile",
+            "args": ["-o run_wandb_original.prof", "run_wandb.py"]
         }
     ]
 }

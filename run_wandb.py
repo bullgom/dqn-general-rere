@@ -17,6 +17,7 @@ if __name__ == "__main__":
     wandb.login()
     wandb_run = wandb.init(
         project="CartPole",
+        name="profiling-test-1",
         monitor_gym=True
     )
 
@@ -35,7 +36,7 @@ if __name__ == "__main__":
         num_frames = 4
         switch_interval = 20
 
-        max_steps = 300000
+        max_steps = 3000
         max_steps_per_episode = 300
         steps_per_train = 50
         steps_per_report = 50
@@ -63,9 +64,9 @@ if __name__ == "__main__":
         selection = EpsilonGreedySelection(egen, action_space)
         agent = Agent(net, selection)
         optimizer = optim.Adam(net.parameters(), lr=lr)
-        buffer = rb.PandasReplayBuffer(buffer_capacity, action_space, cpu, device)
-        trainer = OffPolicyTrainer(net, buffer, batch_size,
-                                switch_interval, optimizer, gamma)
+        buffer = rb.ReplayBuffer(buffer_capacity, action_space, cpu, device)
+        trainer = OffPolicyTrainer(net, buffer, batch_size, switch_interval, 
+                                   optimizer, gamma)
 
         recorder = defaultdict(lambda: list())
         LOSS = "loss"
