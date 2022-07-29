@@ -3,17 +3,15 @@ from network import CartPoleNetwork
 from selection import EpsilonGreedySelection, LinearEpsilonGenerator
 import preprocessing as prep
 from agent import Agent
-from replay_buffer import ReplayBuffer
 from torch import optim
 from trainer import OffPolicyTrainer
-from plotter import Plotter, Plot
 from saver import Saver
 from collections import defaultdict
 from datetime import datetime
-from profiler_callback import TorchProfilerCallaback
 import torch
 import os
 import wandb
+import replay_buffer as rb
 
 if __name__ == "__main__":
     wandb.login()
@@ -23,8 +21,8 @@ if __name__ == "__main__":
     )
 
     with wandb_run:
-
         os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+        os.environ["SDL_VIDEODRIVER"] = "dummy"
 
         buffer_capacity = 100000
         lr = 0.001
@@ -65,7 +63,7 @@ if __name__ == "__main__":
         selection = EpsilonGreedySelection(egen, action_space)
         agent = Agent(net, selection)
         optimizer = optim.Adam(net.parameters(), lr=lr)
-        buffer = ReplayBuffer(buffer_capacity, action_space, cpu, device)
+        buffer = rb.PandasReplayBuffer(buffer_capacity, action_space, cpu, device)
         trainer = OffPolicyTrainer(net, buffer, batch_size,
                                 switch_interval, optimizer, gamma)
 
