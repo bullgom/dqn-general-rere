@@ -7,6 +7,7 @@ import pandas as pd
 
 
 class ReplayBuffer(ABC):
+    """Save as list of tuples. Benchmark: 0.38"""
 
     def __init__(
         self, 
@@ -22,10 +23,13 @@ class ReplayBuffer(ABC):
         self.using_device = using_device
         self.buffer: list[SARS] = []
 
-    def append(self, sars: SARS):
+    def append(self, sars: SARS) -> None:
+        sars = self.detach_sars(sars)
+        self.append_(sars)
+
+    def append_(self, sars: SARS) -> None:
         if self.full():
             self.buffer.pop(0)
-        sars = self.detach_sars(sars)
         self.buffer.append(sars)
         
     def detach_sars(self, sars: SARS) -> SARS:
@@ -63,8 +67,49 @@ class ReplayBuffer(ABC):
     def ready(self, batch_size: int) -> bool:
         return len(self.buffer) >= batch_size
 
-class PandasReplayBuffer(ReplayBuffer):
+class DictReplayBuffer(ReplayBuffer):
+    """Dict of lists. Too slow! Benchmark: 29.8s"""
 
+    def __init__(
+        self, 
+        capacity: int, 
+        action_space: ActionSpace, 
+        saving_device: torch.device, 
+        using_device: torch.device
+    ) -> None:
+        super().__init__(capacity, action_space, saving_device, using_device)
+        self.buffer : dict[str, list] = {k:[] for k in ["s", "a", "r", "sn", "d"]}
+        # For easier counting
+        self.length = 0
+    
+    def append_(self, sars: SARS) -> None:
+        if self.full():
+            self.pop(0)
+        
+        for buffer, value in zip(self.buffer.values(), sars):
+            buffer.append(value)
+        self.length += 1
+    
+    def pop(self, index: int) -> SARS:
+        sars = tuple([self.buffer[key].pop(index) for key in self.buffer.keys()])
+        self.length -= 1
+        return sars
+    
+    def sample_from_inner_buffer(self, batch_size: int) -> list[SARS]:
+        samples = random.choices(list(zip(*self.buffer.values())), k=batch_size)
+        return samples
+    
+    def full(self) -> bool:
+        return self.length == self.capacity
+    
+    def ready(self, batch_size: int) -> bool:
+        return self.length >= batch_size
+
+class PandasReplayBuffer(ReplayBuffer):
+    """
+    While this is easier to dev, this is very slow!!!!!
+    Dataframe is not for FIFO
+    """
     def __init__(
         self, 
         capacity: int, 
@@ -78,10 +123,9 @@ class PandasReplayBuffer(ReplayBuffer):
             dtype="object"
         )
     
-    def append(self, sars: SARS):
+    def append_(self, sars: SARS) -> None:
         if self.full():
             self.buffer.drop([0])
-        sars = self.detach_sars(sars)
         self.buffer.loc[len(self.buffer)] = sars
         return
     
@@ -98,7 +142,7 @@ class PandasReplayBuffer(ReplayBuffer):
     
     def ready(self, batch_size: int) -> bool:
         return len(self.buffer) >= batch_size
-    
+
 
 if __name__ == "__main__":
     buffer = PandasReplayBuffer(10)
