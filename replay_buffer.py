@@ -68,7 +68,7 @@ class ReplayBuffer(ABC):
         return len(self.buffer) >= batch_size
 
 class DictReplayBuffer(ReplayBuffer):
-    """Dict of lists. Too slow! Benchmark: 29.8s"""
+    """Dict of lists. Comparable to original buffer"""
 
     def __init__(
         self, 
@@ -105,6 +105,22 @@ class DictReplayBuffer(ReplayBuffer):
     def ready(self, batch_size: int) -> bool:
         return self.length >= batch_size
 
+class RewardWeightedReplayBuffer(DictReplayBuffer):
+
+    def __init__(
+        self, 
+        capacity: int, 
+        action_space: ActionSpace, 
+        saving_device: torch.device, 
+        using_device: torch.device
+    ) -> None:
+        super().__init__(capacity, action_space, saving_device, using_device)
+    
+    def sample_from_inner_buffer(self, batch_size: int) -> list[SARS]:
+        pool = list(zip(*self.buffer.values()))
+        samples = random.choices(pool, k=batch_size, weights=[r + 1 for r in self.buffer["r"]])
+        return samples
+        
 class PandasReplayBuffer(ReplayBuffer):
     """
     While this is easier to dev, this is very slow!!!!!
