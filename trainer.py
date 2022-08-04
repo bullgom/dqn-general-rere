@@ -23,6 +23,7 @@ class OffPolicyTrainer(Trainer):
     def __init__(
         self,
         policy_network: Network,
+        target_network: Network,
         replay_buffer: ReplayBuffer,
         batch_size: int,
         switch_interval: int,
@@ -32,7 +33,7 @@ class OffPolicyTrainer(Trainer):
         self.replay_buffer = replay_buffer
         self.batch_size = batch_size
         self.policy_network = policy_network
-        self.target_network = policy_network.copy()
+        self.target_network = target_network
         self.switch_interval = switch_interval
         self.step = 0
 
@@ -42,7 +43,7 @@ class OffPolicyTrainer(Trainer):
             return {"dummy": torch.tensor([0])}
         
         if self.step % self.switch_interval == (self.switch_interval - 1):
-            self.target_network = self.policy_network.copy()
+            self.target_network.load_state_dict(self.policy_network.state_dict())
 
         s, a, r, sn, d = self.replay_buffer.sample(self.batch_size)
         
