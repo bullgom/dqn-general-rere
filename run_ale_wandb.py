@@ -49,7 +49,7 @@ if __name__ == "__main__":
         num_frames = 4
         frameskip = 4
         steps_per_switch = 1000
-
+        
         max_steps = 3000000
         max_steps_per_episode = 30000
         steps_per_train = 10
